@@ -1,7 +1,5 @@
 package com.common.cipher;
 
-import android.util.Log;
-
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -19,18 +17,21 @@ import javax.crypto.CipherInputStream;
  */
 
 public class CipherUnlimitedDiskCache extends UnlimitedDiskCache {
+    CipherFilter cipherFilter;
 
-
-    public CipherUnlimitedDiskCache(File cacheDir) {
+    public CipherUnlimitedDiskCache(File cacheDir, CipherFilter cipherFilter) {
         super(cacheDir);
+        this.cipherFilter = cipherFilter;
     }
 
-    public CipherUnlimitedDiskCache(File cacheDir, File reserveCacheDir) {
+    public CipherUnlimitedDiskCache(File cacheDir, File reserveCacheDir, CipherFilter cipherFilter) {
         super(cacheDir, reserveCacheDir);
+        this.cipherFilter = cipherFilter;
     }
 
-    public CipherUnlimitedDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
+    public CipherUnlimitedDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, CipherFilter cipherFilter) {
         super(cacheDir, reserveCacheDir, fileNameGenerator);
+        this.cipherFilter = cipherFilter;
     }
 
     @Override
@@ -39,9 +40,9 @@ public class CipherUnlimitedDiskCache extends UnlimitedDiskCache {
         /**
          * 本地文件的缓存就不加密了
          */
-        if (imageUri.startsWith("http")) {
+        if (cipherFilter.continueCipher(imageUri)) {
             try {
-                inputStream = new CipherInputStream(imageStream, com.common.cipher.CipherImage.getInstance().getEncryptCipher());
+                inputStream = new CipherInputStream(imageStream, cipherFilter.getEncryptCipher());
             } catch (Exception e) {
                 imageStream.close();
                 e.printStackTrace();

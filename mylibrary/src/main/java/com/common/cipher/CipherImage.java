@@ -14,14 +14,6 @@ import javax.crypto.spec.SecretKeySpec;
  * 邮箱：1056483075@qq.com
  */
 public class CipherImage {
-    private static CipherImage ourInstance = new Builder().build();
-
-    public static CipherImage getInstance() {
-        return ourInstance;
-    }
-
-    private CipherImage() {}
-
     /**
      * 加解密图片的密钥
      */
@@ -31,6 +23,11 @@ public class CipherImage {
      * 加解密算法
      */
     private String algorithm;
+
+    public CipherImage(String key, String algorithm) {
+        this.key = key;
+        this.algorithm = algorithm;
+    }
 
     /**
      * 获取解密Cipher
@@ -62,37 +59,5 @@ public class CipherImage {
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher;
-    }
-
-
-    /**
-     * 构造器
-     */
-    public static class Builder {
-        private String key, algorithm;
-
-        public Builder() {
-            key = "123456";//默认密钥
-            algorithm = "RC4";//默认加解密算法
-        }
-
-        public Builder cipherKey(String key) {
-            this.key = key;
-            return this;
-        }
-
-        public Builder cipherAlgorithm(String algorithm) {
-            this.algorithm = algorithm;
-            return this;
-        }
-
-        public CipherImage build() {
-            if (ourInstance == null) {
-                ourInstance = new CipherImage();
-            }
-            ourInstance.algorithm = algorithm;
-            ourInstance.key = key;
-            return ourInstance;
-        }
     }
 }

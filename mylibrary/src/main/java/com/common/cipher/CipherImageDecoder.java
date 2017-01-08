@@ -15,8 +15,11 @@ import javax.crypto.CipherInputStream;
  */
 
 public class CipherImageDecoder extends BaseImageDecoder {
-    public CipherImageDecoder(boolean loggingEnabled) {
+    CipherFilter cipherFilter;
+
+    public CipherImageDecoder(CipherFilter cipherFilter, boolean loggingEnabled) {
         super(loggingEnabled);
+        this.cipherFilter = cipherFilter;
     }
 
     @Override
@@ -25,10 +28,10 @@ public class CipherImageDecoder extends BaseImageDecoder {
         /**
          * 只解密网络下载的图片，其他的途径的图片不用加密所以就不用解密，加解密手段用的是Java的加解密输入流
          */
-        if (decodingInfo.getOriginalImageUri().startsWith("http")) {
+        if (cipherFilter.continueCipher(decodingInfo.getOriginalImageUri())) {
             CipherInputStream in = null;
             try {
-                in = new CipherInputStream(imageStream, CipherImage.getInstance().getDecryptCipher());
+                in = new CipherInputStream(imageStream, cipherFilter.getDecryptCipher());
             } catch (Exception e) {
                 e.printStackTrace();
                 imageStream.close();
